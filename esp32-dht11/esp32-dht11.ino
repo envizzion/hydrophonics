@@ -9,7 +9,7 @@
 
 
 RTC_DATA_ATTR int failedCount = 0;
-RTC_DATA_ATTR float failedData[2][24];
+RTC_DATA_ATTR int failedData[2][48];
 RTC_DATA_ATTR int prevTime[] = {2020, 12, 31, 22, 10};
 
 RTC_DATA_ATTR int monthEnds[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -55,12 +55,12 @@ int  Krish_sec;
 struct tm timeinfo;
 
 void setup() {
-  Serial.begin(115200);
+//  Serial.begin(115200);
 
 
 
 
-//  testFailCount();
+// testFailCount();
 
   /*
     First we configure the wake up source
@@ -85,7 +85,9 @@ void setup() {
 
 
 
-
+  reSaveFailed();
+  resetFailure();
+  esp_deep_sleep_start();
 }
 
 void loop() {
@@ -225,8 +227,8 @@ void  resetFailure() {
 }
 
 void  logFailure() {
-  failedData[0][failedCount] = readTemp();
-  failedData[1][failedCount] = readHumid();
+  failedData[0][failedCount] = (int)(readTemp()*100);
+  failedData[1][failedCount] = (int)(readHumid()*100);
 
 
 
@@ -284,7 +286,7 @@ void reSaveFailed() {
     Serial.print(mint); Serial.print(":"); Serial.print(hour); Serial.print(":"); Serial.print(day); Serial.print(":"); Serial.print(month); Serial.print(":"); Serial.print(year); Serial.print(":"); Serial.println();
 
 
-    saveToFirebase(year, month, day, hour, mint , failedData[0][i] , failedData[1][i]);
+    saveToFirebase(year, month, day, hour, mint , (float)(failedData[0][i])/100 , (float)(failedData[1][i])/100);
 
 
   }
@@ -324,20 +326,18 @@ void testFailCount(){
   
     failedCount = 4 ;
 
-  failedData[0][0] = 20;
-  failedData[0][1] = 21;
-  failedData[0][2] = 22;
-  failedData[0][3] = 23;
+  failedData[0][0] = 2030;
+  failedData[0][1] = 2132;
+  failedData[0][2] = 2200;
+  failedData[0][3] = 2332;
 
-  failedData[1][0] = 40;
-  failedData[1][1] = 41;
-  failedData[1][2] = 42;
-  failedData[1][3] = 43;
+  failedData[1][0] = 4043;
+  failedData[1][1] = 4122;
+  failedData[1][2] = 4200;
+  failedData[1][3] = 4311;
 
 
-  reSaveFailed();
-  resetFailure();
-  esp_deep_sleep_start();
+
   
   
   }
